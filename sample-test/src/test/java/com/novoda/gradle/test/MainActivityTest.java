@@ -4,11 +4,10 @@ import android.widget.TextView;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(RobolectricTestRunner.class)
+@RunWith(RobolectricGradleTestRunner.class)
 public class MainActivityTest {
 
     @Test
@@ -16,6 +15,6 @@ public class MainActivityTest {
         MainActivity activity = new MainActivity();
         activity.onCreate(null);
         TextView text = (TextView) activity.findViewById(R.id.text);
-        assertEquals(text.getText().toString(), "Hello world!");
+        assertEquals(text.getText().toString(), activity.getString(R.string.hello_world));
     }
 }
