@@ -1,13 +1,19 @@
-gradle-android-command-plugin
+gradle-android-test-plugin
 =============================
 
-Use gradle tasks to run specific command, such as:
+To run unit tests for your android code:
 
-- find all devices attached
-- select the first one that complies with a custom rule
-- install a specific Apk from the available build types + flavors
-- clear preferences or do something related to the apk to prepare for tests
-- run monkey runner for that specific apk on that specific device
+* Create a new module with the name of your android project plus "-test" e.g. "novoda-app" has a "novoda-app-test" module.
+* Apply the android-test plugin to the test module
+* Add your tests under scr/test/java
+* Don't forget to add a dependency from your test module to the android module e.g.
 
-
-This is particularly useful for CI servers but could be used to speed up IDE development as well
+```
+dependencies {
+    testCompile project(':novoda-app')
+    testCompile 'junit:junit:4.11'
+    testCompile 'org.mockito:mockito-core:1.9.5'
+    testCompile 'com.squareup:fest-android:1.0.+'
+    testCompile 'org.robolectric:robolectric:2.1.+'
+}
+```
