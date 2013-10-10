@@ -22,14 +22,6 @@ class AndroidTestPlugin implements Plugin<Project> {
     void apply(Project project) {
         Project androidProject = project.project(":" + project.name.replace("-test", ""))
 
-
-        println "Check this out"
-        println "Has app plugin ${androidProject.plugins.hasPlugin "android"}"
-        println "Find plugin ${androidProject.plugins.findPlugin "android"}"
-        println "Get plugin ${androidProject.plugins.getPlugin "android"}"
-
-
-
         def hasAppPlugin = androidProject.plugins.hasPlugin APP_PLUGIN
         def hasLibraryPlugin = androidProject.plugins.hasPlugin LIBRARY_PLUGIN
         def log = project.logger
