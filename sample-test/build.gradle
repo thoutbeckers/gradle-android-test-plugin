@@ -1,4 +1,3 @@
-import org.apache.tools.ant.Project
 
 buildscript {
     repositories {
@@ -13,8 +12,8 @@ buildscript {
     }
 }
 
-apply plugin: 'java'
-apply plugin: 'android-test'
+apply plugin: 'groovy'
+apply plugin: AndroidTestPlugin
 
 repositories {
     mavenCentral()
@@ -22,6 +21,9 @@ repositories {
 
 dependencies {
     testCompile project(':sample')
+    testCompile "org.codehaus.groovy:groovy-all:1.8.6"
+    testCompile "org.spockframework:spock-core:0.6-groovy-1.8"
+
     testCompile 'junit:junit:4.11'
     testCompile 'org.mockito:mockito-core:1.9.5'
     testCompile 'com.squareup:fest-android:1.0.+'
@@ -29,8 +31,14 @@ dependencies {
     testCompile 'com.google.android:android:4.0.1.2'
 }
 
+tasks.withType(Compile) {
+    doFirst {
+        println classpath.getAsPath().replace(":", "\n")
+    }
+}
 
-class AndroidTestPlugin implements Plugin<Project> {
+
+class AndroidTestPlugin implements Plugin<org.gradle.api.Project> {
 
     private static final String TEST_DIR = 'test'
     private static final String TEST_TASK_NAME = 'test'
@@ -91,10 +99,19 @@ class AndroidTestPlugin implements Plugin<Project> {
                 testSrcDirs.add project.file("src/$TEST_DIR$flavor/java")
             }
 
+            def groovyTestSrcDirs = []
+            groovyTestSrcDirs.add(project.file("src/$TEST_DIR/groovy"))
+            groovyTestSrcDirs.add(project.file("src/$TEST_DIR$buildTypeName/groovy"))
+            groovyTestSrcDirs.add(project.file("src/$TEST_DIR$projectFlavorName/groovy"))
+            projectFlavorNames.each { flavor ->
+                groovyTestSrcDirs.add project.file("src/$TEST_DIR$flavor/groovy")
+            }
+
             JavaPluginConvention javaConvention = project.convention.getPlugin JavaPluginConvention
             SourceSet variationSources = javaConvention.sourceSets.create "test$variationName"
             variationSources.resources.srcDirs project.file("src/$TEST_DIR/resources")
             variationSources.java.setSrcDirs testSrcDirs
+            variationSources.groovy.setSrcDirs groovyTestSrcDirs
 
             log.debug("----------------------------------------")
             log.debug("build type name: $buildTypeName")
@@ -129,6 +146,19 @@ class AndroidTestPlugin implements Plugin<Project> {
                 testCompileTask.options.bootClasspath = androidRuntime
             }
 
+            // Create a task which compiles the test sources.
+            def groovyTestCompileTask = project.tasks.getByName "compileTest${variationName}Groovy"
+            // Depend on the project compilation (which itself depends on the manifest processing task).
+            groovyTestCompileTask.dependsOn testCompileTask
+            groovyTestCompileTask.group = null
+            groovyTestCompileTask.description = null
+            groovyTestCompileTask.classpath = testCompileClasspath
+            groovyTestCompileTask.source = variationSources.groovy
+            groovyTestCompileTask.destinationDir = testDestinationDir.getSingleFile()
+            groovyTestCompileTask.doFirst {
+                groovyTestCompileTask.options.bootClasspath = androidRuntime
+            }
+
             // Clear out the group/description of the classes plugin so it's not top-level.
             def testClassesTask = project.tasks.getByName variationSources.classesTaskName
             testClassesTask.group = null
@@ -145,7 +175,7 @@ class AndroidTestPlugin implements Plugin<Project> {
             testRunTask.dependsOn testClassesTask
             testRunTask.inputs.sourceFiles.from.clear()
             testRunTask.classpath = testRunClasspath
-            testRunTask.testClassesDir = testCompileTask.destinationDir
+            testRunTask.testClassesDir = testCompileTask.destinationDir   // XXX add Groovy here?
             testRunTask.group = JavaBasePlugin.VERIFICATION_GROUP
             testRunTask.description = "Run unit tests for Build '$variationName'."
             // TODO Gradle 1.7: testRunTask.reports.html.destination =
