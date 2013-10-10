@@ -1,3 +1,5 @@
+package com.novoda.gradle.test
+
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
@@ -13,12 +15,23 @@ class AndroidTestPlugin implements Plugin<Project> {
     private static final String TEST_CLASSES_DIR = 'test-classes'
     private static final String TEST_REPORT_DIR = 'test-report'
 
+    private static final String APP_PLUGIN = "android"
+    private static final String LIBRARY_PLUGIN = "android-library"
+
     @Override
     void apply(Project project) {
         Project androidProject = project.project(":" + project.name.replace("-test", ""))
 
-        def hasAppPlugin = androidProject.plugins.hasPlugin "android"
-        def hasLibraryPlugin = androidProject.plugins.hasPlugin "android-library"
+
+        println "Check this out"
+        println "Has app plugin ${androidProject.plugins.hasPlugin "android"}"
+        println "Find plugin ${androidProject.plugins.findPlugin "android"}"
+        println "Get plugin ${androidProject.plugins.getPlugin "android"}"
+
+
+
+        def hasAppPlugin = androidProject.plugins.hasPlugin APP_PLUGIN
+        def hasLibraryPlugin = androidProject.plugins.hasPlugin LIBRARY_PLUGIN
         def log = project.logger
 
         // Ensure the Android plugin has been added in app or library form, but not both.
@@ -40,7 +53,7 @@ class AndroidTestPlugin implements Plugin<Project> {
         // Add our new task to Gradle's standard "check" task.
         project.tasks.check.dependsOn testTask
 
-        Plugin androidPlugin = androidProject.plugins.getPlugin(hasAppPlugin ? "android" : "android-library");
+        Plugin androidPlugin = androidProject.plugins.getPlugin(hasAppPlugin ? APP_PLUGIN : LIBRARY_PLUGIN);
         def androidRuntime = androidPlugin.getRuntimeJarList().join(File.pathSeparator)
 
         def variants = hasAppPlugin ? androidProject.android.applicationVariants :

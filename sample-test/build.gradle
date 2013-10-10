@@ -12,7 +12,7 @@ buildscript {
 }
 
 apply plugin: 'java'
-apply plugin: AndroidTestPlugin
+apply plugin: 'android-test'
 
 repositories {
     mavenCentral()
@@ -37,10 +37,6 @@ class AndroidTestPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         Project androidProject = project.project(":" + project.name.replace("-test", ""))
-
-        println "Check this out"
-        println androidProject.name
-        println androidProject.plugins.toListString()
 
         def hasAppPlugin = androidProject.plugins.hasPlugin "android"
         def hasLibraryPlugin = androidProject.plugins.hasPlugin "android-library"
