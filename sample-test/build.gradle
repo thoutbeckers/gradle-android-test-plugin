@@ -175,7 +175,7 @@ class AndroidTestPlugin implements Plugin<org.gradle.api.Project> {
             testRunTask.dependsOn testClassesTask
             testRunTask.inputs.sourceFiles.from.clear()
             testRunTask.classpath = testRunClasspath
-            testRunTask.testClassesDir = testCompileTask.destinationDir   // XXX add Groovy here?
+            testRunTask.testClassesDir = testDestinationDir.getSingleFile()
             testRunTask.group = JavaBasePlugin.VERIFICATION_GROUP
             testRunTask.description = "Run unit tests for Build '$variationName'."
             // TODO Gradle 1.7: testRunTask.reports.html.destination =
