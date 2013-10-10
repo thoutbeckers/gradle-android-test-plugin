@@ -1,0 +1,2 @@
+rootProject.name = 'gradle-android-test-plugin-parent'
+include ':gradle-android-test-plugin', ':sample', ':sample-test'

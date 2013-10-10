@@ -1,0 +1,57 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.5.+'
+    }
+}
+apply plugin: 'android'
+
+repositories {
+    mavenCentral()
+}
+
+android {
+    compileSdkVersion 18
+    buildToolsVersion "18.0.1"
+
+    defaultConfig {
+        minSdkVersion 7
+        targetSdkVersion 16
+    }
+
+    buildTypes {
+        debug {}
+        release {}
+        QA {}
+    }
+
+    productFlavors {
+
+        flavorGroups "pricing", "releaseType"
+
+        beta {
+            flavorGroup "releaseType"
+        }
+
+        normal {
+            flavorGroup "releaseType"
+        }
+
+        free {
+            flavorGroup "pricing"
+        }
+
+        paid {
+            flavorGroup "pricing"
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:18.0.0'
+}
