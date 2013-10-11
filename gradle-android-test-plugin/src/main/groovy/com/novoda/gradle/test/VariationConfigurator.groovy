@@ -44,8 +44,9 @@ class VariationConfigurator {
                 "$project.buildDir/$TEST_CLASSES_DIR/$variant.dirName")
 
         // Configure the compile task for every language supported
-        new SourceSetConfigurator(project, androidRuntime).eachLanguage { String language ->
-            setupCompileTestTask(language, variationSources, javaCompile,
+        SourceSetConfigurator configurator = new SourceSetConfigurator(project, androidRuntime)
+        configurator.eachLanguage { String language ->
+            configurator.setupCompileTestTask(language, variationSources, javaCompile,
                     testCompileClasspath, testDestinationDir, info)
         }
 

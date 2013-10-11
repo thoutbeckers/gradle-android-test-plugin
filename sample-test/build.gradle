@@ -30,13 +30,6 @@ dependencies {
     testCompile 'com.google.android:android:4.0.1.2'
 }
 
-tasks.withType(Compile) {
-    doFirst {
-        println classpath.getAsPath().replace(":", "\n")
-    }
-}
-
-
 android {
     projectUnderTest project(':sample')
 }
