@@ -1,4 +1,3 @@
-
 buildscript {
     repositories {
         mavenCentral()
@@ -38,20 +37,35 @@ tasks.withType(Compile) {
 }
 
 
+android {
+    projectUnderTest project(':sample')
+}
+
+
 class AndroidTestPlugin implements Plugin<org.gradle.api.Project> {
 
-    private static final String TEST_DIR = 'test'
+    @Override
+    void apply(org.gradle.api.Project project) {
+        project.extensions.create("android", AndroidTestPluginExtension)
+        project.android.testProject = project
+    }
+}
+
+
+class AndroidTestPluginExtension {
+
+    public static final String TEST_DIR = 'test'
     private static final String TEST_TASK_NAME = 'test'
     private static final String TEST_CLASSES_DIR = 'test-classes'
     private static final String TEST_REPORT_DIR = 'test-report'
 
-    @Override
-    void apply(Project project) {
-        Project androidProject = project.project(":" + project.name.replace("-test", ""))
+    org.gradle.api.Project testProject
+
+    def projectUnderTest(androidProject) {
 
         def hasAppPlugin = androidProject.plugins.hasPlugin "android"
         def hasLibraryPlugin = androidProject.plugins.hasPlugin "android-library"
-        def log = project.logger
+        def log = androidProject.logger
 
         // Ensure the Android plugin has been added in app or library form, but not both.
         if (!hasAppPlugin && !hasLibraryPlugin) {
@@ -62,17 +76,17 @@ class AndroidTestPlugin implements Plugin<org.gradle.api.Project> {
         }
 
         // Get the 'test' configuration for test-only dependencies.
-        def testConfiguration = project.configurations.getByName('testCompile')
+        def testConfiguration = testProject.configurations.getByName('testCompile')
 
         // Replace the root 'test' task for running all unit tests.
-        def testTask = project.tasks.replace(TEST_TASK_NAME, TestReport)
-        testTask.destinationDir = project.file("$project.buildDir/$TEST_REPORT_DIR")
+        def testTask = testProject.tasks.replace(TEST_TASK_NAME, TestReport)
+        testTask.destinationDir = testProject.file("$testProject.buildDir/$TEST_REPORT_DIR")
         testTask.description = 'Runs all unit tests.'
         testTask.group = JavaBasePlugin.VERIFICATION_GROUP
         // Add our new task to Gradle's standard "check" task.
-        project.tasks.check.dependsOn testTask
+        testProject.tasks.check.dependsOn testTask
 
-        Plugin androidPlugin = androidProject.plugins.getPlugin(hasAppPlugin ? "android" : "android-library");
+        def androidPlugin = androidProject.plugins.getPlugin(hasAppPlugin ? "android" : "android-library");
         def androidRuntime = androidPlugin.getRuntimeJarList().join(File.pathSeparator)
 
         def variants = hasAppPlugin ? androidProject.android.applicationVariants :
@@ -92,24 +106,24 @@ class AndroidTestPlugin implements Plugin<org.gradle.api.Project> {
             def processedAssetsPath = variant.mergeAssets.outputDir
 
             def testSrcDirs = []
-            testSrcDirs.add(project.file("src/$TEST_DIR/java"))
-            testSrcDirs.add(project.file("src/$TEST_DIR$buildTypeName/java"))
-            testSrcDirs.add(project.file("src/$TEST_DIR$projectFlavorName/java"))
+            testSrcDirs.add(testProject.file("src/$TEST_DIR/java"))
+            testSrcDirs.add(testProject.file("src/$TEST_DIR$buildTypeName/java"))
+            testSrcDirs.add(testProject.file("src/$TEST_DIR$projectFlavorName/java"))
             projectFlavorNames.each { flavor ->
-                testSrcDirs.add project.file("src/$TEST_DIR$flavor/java")
+                testSrcDirs.add testProject.file("src/$TEST_DIR$flavor/java")
             }
 
             def groovyTestSrcDirs = []
-            groovyTestSrcDirs.add(project.file("src/$TEST_DIR/groovy"))
-            groovyTestSrcDirs.add(project.file("src/$TEST_DIR$buildTypeName/groovy"))
-            groovyTestSrcDirs.add(project.file("src/$TEST_DIR$projectFlavorName/groovy"))
+            groovyTestSrcDirs.add(testProject.file("src/$TEST_DIR/groovy"))
+            groovyTestSrcDirs.add(testProject.file("src/$TEST_DIR$buildTypeName/groovy"))
+            groovyTestSrcDirs.add(testProject.file("src/$TEST_DIR$projectFlavorName/groovy"))
             projectFlavorNames.each { flavor ->
-                groovyTestSrcDirs.add project.file("src/$TEST_DIR$flavor/groovy")
+                groovyTestSrcDirs.add testProject.file("src/$TEST_DIR$flavor/groovy")
             }
 
-            JavaPluginConvention javaConvention = project.convention.getPlugin JavaPluginConvention
+            JavaPluginConvention javaConvention = testProject.convention.getPlugin JavaPluginConvention
             SourceSet variationSources = javaConvention.sourceSets.create "test$variationName"
-            variationSources.resources.srcDirs project.file("src/$TEST_DIR/resources")
+            variationSources.resources.srcDirs testProject.file("src/$TEST_DIR/resources")
             variationSources.java.setSrcDirs testSrcDirs
             variationSources.groovy.setSrcDirs groovyTestSrcDirs
 
@@ -128,13 +142,13 @@ class AndroidTestPlugin implements Plugin<org.gradle.api.Project> {
 
             // Add the corresponding java compilation output to the 'testCompile' configuration to
             // create the classpath for the test file compilation.
-            def testCompileClasspath = testConfiguration.plus project.files(javaCompile.destinationDir, javaCompile.classpath)
+            def testCompileClasspath = testConfiguration.plus testProject.files(javaCompile.destinationDir, javaCompile.classpath)
 
-            def testDestinationDir = project.files(
-                    "$project.buildDir/$TEST_CLASSES_DIR/$variant.dirName")
+            def testDestinationDir = testProject.files(
+                    "$testProject.buildDir/$TEST_CLASSES_DIR/$variant.dirName")
 
             // Create a task which compiles the test sources.
-            def testCompileTask = project.tasks.getByName variationSources.compileJavaTaskName
+            def testCompileTask = testProject.tasks.getByName variationSources.getCompileTaskName('java')
             // Depend on the project compilation (which itself depends on the manifest processing task).
             testCompileTask.dependsOn javaCompile
             testCompileTask.group = null
@@ -147,7 +161,7 @@ class AndroidTestPlugin implements Plugin<org.gradle.api.Project> {
             }
 
             // Create a task which compiles the test sources.
-            def groovyTestCompileTask = project.tasks.getByName "compileTest${variationName}Groovy"
+            def groovyTestCompileTask = testProject.tasks.getByName variationSources.getCompileTaskName('groovy')
             // Depend on the project compilation (which itself depends on the manifest processing task).
             groovyTestCompileTask.dependsOn testCompileTask
             groovyTestCompileTask.group = null
@@ -160,18 +174,18 @@ class AndroidTestPlugin implements Plugin<org.gradle.api.Project> {
             }
 
             // Clear out the group/description of the classes plugin so it's not top-level.
-            def testClassesTask = project.tasks.getByName variationSources.classesTaskName
+            def testClassesTask = testProject.tasks.getByName variationSources.classesTaskName
             testClassesTask.group = null
             testClassesTask.description = null
 
             // Add the output of the test file compilation to the existing test classpath to create
             // the runtime classpath for test execution.
             def testRunClasspath = testCompileClasspath.plus testDestinationDir
-            testRunClasspath.add project.files("$project.buildDir/resources/test$variationName")
+            testRunClasspath.add testProject.files("$testProject.buildDir/resources/test$variationName")
 
             // Create a task which runs the compiled test classes.
             def taskRunName = "$TEST_TASK_NAME$variationName"
-            def testRunTask = project.tasks.create(taskRunName, Test)
+            def testRunTask = testProject.tasks.create(taskRunName, Test)
             testRunTask.dependsOn testClassesTask
             testRunTask.inputs.sourceFiles.from.clear()
             testRunTask.classpath = testRunClasspath
@@ -180,10 +194,10 @@ class AndroidTestPlugin implements Plugin<org.gradle.api.Project> {
             testRunTask.description = "Run unit tests for Build '$variationName'."
             // TODO Gradle 1.7: testRunTask.reports.html.destination =
             testRunTask.testReportDir =
-                    project.file("$project.buildDir/$TEST_REPORT_DIR/$variant.dirName")
+                    testProject.file("$testProject.buildDir/$TEST_REPORT_DIR/$variant.dirName")
             testRunTask.doFirst {
                 // Prepend the Android runtime onto the classpath.
-                testRunTask.classpath = project.files(androidRuntime).plus testRunClasspath
+                testRunTask.classpath = testProject.files(androidRuntime).plus testRunClasspath
             }
 
             // Work around http://issues.gradle.org/browse/GRADLE-1682
