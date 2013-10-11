@@ -25,7 +25,12 @@ class SourceSetConfigurator {
 
         if (project.plugins.hasPlugin('groovy')) {
             variationSources.groovy.setSrcDirs testSrcDir(buildTypeName, projectFlavorName, projectFlavorNames, 'groovy')
-            Task testCompileTaskGroovy = compileTestTask(variationSources, variationSources.groovy, testCompileTaskJava, testCompileClasspath, testDestinationDir, 'groovy')
+            compileTestTask(variationSources, variationSources.groovy, testCompileTaskJava, testCompileClasspath, testDestinationDir, 'groovy')
+        }
+
+        if (project.plugins.hasPlugin('scala')) {
+            variationSources.scala.setSrcDirs testSrcDir(buildTypeName, projectFlavorName, projectFlavorNames, 'scala')
+            compileTestTask(variationSources, variationSources.scala, testCompileTaskJava, testCompileClasspath, testDestinationDir, 'scala')
         }
     }
 
