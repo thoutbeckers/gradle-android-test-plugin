@@ -43,7 +43,7 @@ class AndroidTestPluginExtension {
         def variants = hasAppPlugin ? androidProject.android.applicationVariants :
                 androidProject.android.libraryVariants
 
-        VariantConfigurator variantConfigurator = new VariantConfigurator(testProject, androidRuntime, testConfiguration, testTask)
+        VariationConfigurator variantConfigurator = new VariationConfigurator(testProject, androidRuntime, testConfiguration, testTask)
         variants.all { variant ->
             variantConfigurator.configure(variant)
         }

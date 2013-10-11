@@ -18,18 +18,18 @@ class SourceSetConfigurator {
     }
 
     public void configure(SourceSet variationSources, Task compileAndroid, FileCollection testCompileClasspath,
-                          def testDestinationDir, String buildTypeName, List projectFlavorNames, String projectFlavorName) {
+                          def testDestinationDir, VariationInfo info) {
 
-        variationSources.java.setSrcDirs testSrcDir(buildTypeName, projectFlavorName, projectFlavorNames, 'java')
+        variationSources.java.setSrcDirs testSrcDir(info, 'java')
         Task testCompileTaskJava = compileTestTask(variationSources, variationSources.java, compileAndroid, testCompileClasspath, testDestinationDir, 'java')
 
         if (project.plugins.hasPlugin('groovy')) {
-            variationSources.groovy.setSrcDirs testSrcDir(buildTypeName, projectFlavorName, projectFlavorNames, 'groovy')
+            variationSources.groovy.setSrcDirs testSrcDir(info, 'groovy')
             compileTestTask(variationSources, variationSources.groovy, testCompileTaskJava, testCompileClasspath, testDestinationDir, 'groovy')
         }
 
         if (project.plugins.hasPlugin('scala')) {
-            variationSources.scala.setSrcDirs testSrcDir(buildTypeName, projectFlavorName, projectFlavorNames, 'scala')
+            variationSources.scala.setSrcDirs testSrcDir(info, 'scala')
             compileTestTask(variationSources, variationSources.scala, testCompileTaskJava, testCompileClasspath, testDestinationDir, 'scala')
         }
     }
@@ -50,12 +50,12 @@ class SourceSetConfigurator {
         testCompileTask
     }
 
-    private ArrayList testSrcDir(String buildTypeName, String projectFlavorName, List projectFlavorNames, String language) {
+    private ArrayList testSrcDir(VariationInfo info, String language) {
         def testSrcDirs = []
         testSrcDirs.add(file("src/$TEST_DIR/$language"))
-        testSrcDirs.add(file("src/$TEST_DIR$buildTypeName/$language"))
-        testSrcDirs.add(file("src/$TEST_DIR$projectFlavorName/$language"))
-        projectFlavorNames.each { flavor ->
+        testSrcDirs.add(file("src/$TEST_DIR$info.buildTypeName/$language"))
+        testSrcDirs.add(file("src/$TEST_DIR$info.projectFlavorName/$language"))
+        info.projectFlavorNames.each { flavor ->
             testSrcDirs.add file("src/$TEST_DIR$flavor/$language")
         }
         testSrcDirs

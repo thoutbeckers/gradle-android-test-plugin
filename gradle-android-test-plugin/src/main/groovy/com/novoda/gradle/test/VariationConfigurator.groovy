@@ -1,4 +1,5 @@
 package com.novoda.gradle.test
+
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
@@ -8,7 +9,7 @@ import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.testing.Test
 
-class VariantConfigurator {
+class VariationConfigurator {
 
     private static final String TEST_DIR = AndroidTestPluginExtension.TEST_DIR
     private static final String TEST_TASK_NAME = AndroidTestPluginExtension.TEST_TASK_NAME
@@ -20,7 +21,7 @@ class VariantConfigurator {
     private final Configuration testConfiguration
     private final Task testTask
 
-    VariantConfigurator(Project project, androidRuntime, Configuration testConfiguration, Task testTask) {
+    VariationConfigurator(Project project, androidRuntime, Configuration testConfiguration, Task testTask) {
         this.project = project
         this.androidRuntime = androidRuntime
         this.testConfiguration = testConfiguration
@@ -28,22 +29,10 @@ class VariantConfigurator {
     }
 
     public void configure(variant) {
-        // Get the build type name (e.g., "Debug", "Release").
-        String buildTypeName = variant.buildType.name.capitalize()
-        List projectFlavorNames = variant.productFlavors.collect { it.name.capitalize() }
-        String projectFlavorName = projectFlavorNames.join()
-        // The combination of flavor and type yield a unique "variation". This value is used for
-        // looking up existing associated tasks as well as naming the task we are about to create.
-        String variationName = "$projectFlavorName$buildTypeName"
-        // Grab the task which outputs the merged manifest, resources, and assets for this flavor.
-        def processedManifestPath = variant.processManifest.manifestOutputFile
-        def processedResourcesPath = variant.mergeResources.outputDir
-        def processedAssetsPath = variant.mergeAssets.outputDir
-
-
+        VariationInfo info = new VariationInfo(variant)
 
         JavaPluginConvention javaConvention = project.convention.getPlugin JavaPluginConvention
-        SourceSet variationSources = javaConvention.sourceSets.create "test$variationName"
+        SourceSet variationSources = javaConvention.sourceSets.create "test$info.variationName"
         variationSources.resources.srcDirs file("src/$TEST_DIR/resources")
 
         Task javaCompile = variant.javaCompile;
@@ -55,7 +44,7 @@ class VariantConfigurator {
                 "$project.buildDir/$TEST_CLASSES_DIR/$variant.dirName")
 
         // Configure the compile task for every language supported
-        new SourceSetConfigurator(project, androidRuntime).configure(variationSources, javaCompile, testCompileClasspath, testDestinationDir, buildTypeName, projectFlavorNames, projectFlavorName)
+        new SourceSetConfigurator(project, androidRuntime).configure(variationSources, javaCompile, testCompileClasspath, testDestinationDir, info)
 
         // Clear out the group/description of the classes plugin so it's not top-level.
         def testClassesTask = project.tasks.getByName variationSources.classesTaskName
@@ -65,17 +54,17 @@ class VariantConfigurator {
         // Add the output of the test file compilation to the existing test classpath to create
         // the runtime classpath for test execution.
         def testRunClasspath = testCompileClasspath.plus testDestinationDir
-        testRunClasspath.add files("$project.buildDir/resources/test$variationName")
+        testRunClasspath.add files("$project.buildDir/resources/test$info.variationName")
 
         // Create a task which runs the compiled test classes.
-        def taskRunName = "$TEST_TASK_NAME$variationName"
+        def taskRunName = "$TEST_TASK_NAME$info.variationName"
         def testRunTask = project.tasks.create(taskRunName, Test)
         testRunTask.dependsOn testClassesTask
         testRunTask.inputs.sourceFiles.from.clear()
         testRunTask.classpath = testRunClasspath
         testRunTask.testClassesDir = testDestinationDir.getSingleFile()
         testRunTask.group = JavaBasePlugin.VERIFICATION_GROUP
-        testRunTask.description = "Run unit tests for Build '$variationName'."
+        testRunTask.description = "Run unit tests for Build '$info.variationName'."
         // TODO Gradle 1.7: testRunTask.reports.html.destination =
         testRunTask.testReportDir =
                 file("$project.buildDir/$TEST_REPORT_DIR/$variant.dirName")
@@ -89,19 +78,19 @@ class VariantConfigurator {
         testRunTask.include '**/*Test.class'
         testRunTask.include '**/*Spec.class'
         // Add the path to the correct manifest, resources, assets as a system property.
-        testRunTask.systemProperties.put('android.manifest', processedManifestPath)
-        testRunTask.systemProperties.put('android.resources', processedResourcesPath)
-        testRunTask.systemProperties.put('android.assets', processedAssetsPath)
+        testRunTask.systemProperties.put('android.manifest', info.processedManifestPath)
+        testRunTask.systemProperties.put('android.resources', info.processedResourcesPath)
+        testRunTask.systemProperties.put('android.assets', info.processedAssetsPath)
 
         testTask.reportOn testRunTask
 
         log("----------------------------------------")
-        log("build type name: $buildTypeName")
-        log("project flavor name: $projectFlavorName")
-        log("variation name: $variationName")
-        log("manifest: $processedManifestPath")
-        log("resources: $processedResourcesPath")
-        log("assets: $processedAssetsPath")
+        log("build type name: $info.buildTypeName")
+        log("project flavor name: $info.projectFlavorName")
+        log("variation name: $info.variationName")
+        log("manifest: $info.processedManifestPath")
+        log("resources: $info.processedResourcesPath")
+        log("assets: $info.processedAssetsPath")
         log("test sources: $variationSources.java.asPath")
         log("test resources: $variationSources.resources.asPath")
         log("----------------------------------------")
