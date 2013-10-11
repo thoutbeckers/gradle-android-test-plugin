@@ -35,11 +35,9 @@ class VariationConfigurator {
         SourceSet variationSources = javaConvention.sourceSets.create "test$variationInfo.variationName"
         variationSources.resources.srcDirs file("src/$TEST_DIR/resources")
 
-
-
         // Configure the compile task for every language supported
         SourceSetConfigurator configurator = new SourceSetConfigurator(project, androidRuntime)
-        configurator.eachLanguage { String language ->
+        eachSupportedLanguage { String language ->
             configurator.configureCompileTestTask(language, variationSources, testInfo, variationInfo)
         }
 
@@ -90,6 +88,16 @@ class VariationConfigurator {
         log("test sources: $variationSources.java.asPath")
         log("test resources: $variationSources.resources.asPath")
         log("----------------------------------------")
+    }
+
+    private void eachSupportedLanguage(Closure closure) {
+        closure('java')
+        if (project.plugins.hasPlugin('groovy')) {
+            closure('groovy')
+        }
+        if (project.plugins.hasPlugin('scala')) {
+            closure('scala')
+        }
     }
 
     private File file(Object path) {

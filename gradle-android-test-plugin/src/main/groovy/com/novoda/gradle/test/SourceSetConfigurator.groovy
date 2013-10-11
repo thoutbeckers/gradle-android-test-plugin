@@ -1,4 +1,5 @@
 package com.novoda.gradle.test
+
 import org.gradle.api.Project
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.tasks.SourceSet
@@ -13,16 +14,6 @@ class SourceSetConfigurator {
     SourceSetConfigurator(Project project, androidRuntime) {
         this.project = project
         this.androidRuntime = androidRuntime
-    }
-
-    public void eachLanguage(Closure closure) {
-        closure('java')
-        if (project.plugins.hasPlugin('groovy')) {
-            closure('groovy')
-        }
-        if (project.plugins.hasPlugin('scala')) {
-            closure('scala')
-        }
     }
 
     public void configureCompileTestTask(String language, SourceSet variationSources, TestInfo testTasksInfo, VariationInfo variationInfo) {
