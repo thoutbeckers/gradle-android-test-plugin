@@ -1,10 +1,12 @@
 package com.novoda.gradle.test
-import org.gradle.api.Plugin
 
-class AndroidTestPlugin implements Plugin<org.gradle.api.Project> {
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+
+class AndroidTestPlugin implements Plugin<Project> {
 
     @Override
-    void apply(org.gradle.api.Project project) {
+    void apply(Project project) {
         project.extensions.create("android", AndroidTestPluginExtension)
         project.android.testProject = project
     }
