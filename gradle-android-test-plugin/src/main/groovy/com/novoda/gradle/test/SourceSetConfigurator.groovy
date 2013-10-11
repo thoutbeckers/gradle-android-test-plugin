@@ -59,9 +59,4 @@ class SourceSetConfigurator {
     private File file(Object path) {
         project.file(path)
     }
-
-    private FileCollection files(Object... files) {
-        project.files(files)
-    }
-
 }
