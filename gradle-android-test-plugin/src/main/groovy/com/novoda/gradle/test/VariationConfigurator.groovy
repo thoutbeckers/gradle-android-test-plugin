@@ -13,7 +13,6 @@ class VariationConfigurator {
 
     private static final String TEST_DIR = AndroidTestPluginExtension.TEST_DIR
     private static final String TEST_TASK_NAME = AndroidTestPluginExtension.TEST_TASK_NAME
-    private static final String TEST_CLASSES_DIR = AndroidTestPluginExtension.TEST_CLASSES_DIR
     private static final String TEST_REPORT_DIR = AndroidTestPluginExtension.TEST_REPORT_DIR
 
     private final Project project
@@ -29,25 +28,19 @@ class VariationConfigurator {
     }
 
     public void configure(variant) {
-        VariationInfo info = new VariationInfo(variant)
+        VariationInfo variationInfo = new VariationInfo(variant)
+        TestInfo testInfo = new TestInfo(project, testConfiguration, variant)
 
         JavaPluginConvention javaConvention = project.convention.getPlugin JavaPluginConvention
-        SourceSet variationSources = javaConvention.sourceSets.create "test$info.variationName"
+        SourceSet variationSources = javaConvention.sourceSets.create "test$variationInfo.variationName"
         variationSources.resources.srcDirs file("src/$TEST_DIR/resources")
 
-        Task javaCompile = variant.javaCompile;
-        // Add the corresponding java compilation output to the 'testCompile' configuration to
-        // create the classpath for the test file compilation.
-        def testCompileClasspath = testConfiguration.plus files(javaCompile.destinationDir, javaCompile.classpath)
 
-        def testDestinationDir = files(
-                "$project.buildDir/$TEST_CLASSES_DIR/$variant.dirName")
 
         // Configure the compile task for every language supported
         SourceSetConfigurator configurator = new SourceSetConfigurator(project, androidRuntime)
         configurator.eachLanguage { String language ->
-            configurator.setupCompileTestTask(language, variationSources, javaCompile,
-                    testCompileClasspath, testDestinationDir, info)
+            configurator.configureCompileTestTask(language, variationSources, testInfo, variationInfo)
         }
 
         // Clear out the group/description of the classes plugin so it's not top-level.
@@ -57,24 +50,23 @@ class VariationConfigurator {
 
         // Add the output of the test file compilation to the existing test classpath to create
         // the runtime classpath for test execution.
-        def testRunClasspath = testCompileClasspath.plus testDestinationDir
-        testRunClasspath.add files("$project.buildDir/resources/test$info.variationName")
+        testInfo.testRunClasspath.add files("$project.buildDir/resources/test$variationInfo.variationName")
 
         // Create a task which runs the compiled test classes.
-        def taskRunName = "$TEST_TASK_NAME$info.variationName"
+        def taskRunName = "$TEST_TASK_NAME$variationInfo.variationName"
         def testRunTask = project.tasks.create(taskRunName, Test)
         testRunTask.dependsOn testClassesTask
         testRunTask.inputs.sourceFiles.from.clear()
-        testRunTask.classpath = testRunClasspath
-        testRunTask.testClassesDir = testDestinationDir.getSingleFile()
+        testRunTask.classpath = testInfo.testRunClasspath
+        testRunTask.testClassesDir = testInfo.testDestinationDir
         testRunTask.group = JavaBasePlugin.VERIFICATION_GROUP
-        testRunTask.description = "Run unit tests for Build '$info.variationName'."
+        testRunTask.description = "Run unit tests for Build '$variationInfo.variationName'."
         // TODO Gradle 1.7: testRunTask.reports.html.destination =
         testRunTask.testReportDir =
                 file("$project.buildDir/$TEST_REPORT_DIR/$variant.dirName")
         testRunTask.doFirst {
             // Prepend the Android runtime onto the classpath.
-            testRunTask.classpath = files(androidRuntime).plus testRunClasspath
+            testRunTask.classpath = files(androidRuntime).plus testInfo.testRunClasspath
         }
 
         // Work around http://issues.gradle.org/browse/GRADLE-1682
@@ -82,19 +74,19 @@ class VariationConfigurator {
         testRunTask.include '**/*Test.class'
         testRunTask.include '**/*Spec.class'
         // Add the path to the correct manifest, resources, assets as a system property.
-        testRunTask.systemProperties.put('android.manifest', info.processedManifestPath)
-        testRunTask.systemProperties.put('android.resources', info.processedResourcesPath)
-        testRunTask.systemProperties.put('android.assets', info.processedAssetsPath)
+        testRunTask.systemProperties.put('android.manifest', variationInfo.processedManifestPath)
+        testRunTask.systemProperties.put('android.resources', variationInfo.processedResourcesPath)
+        testRunTask.systemProperties.put('android.assets', variationInfo.processedAssetsPath)
 
         testTask.reportOn testRunTask
 
         log("----------------------------------------")
-        log("build type name: $info.buildTypeName")
-        log("project flavor name: $info.projectFlavorName")
-        log("variation name: $info.variationName")
-        log("manifest: $info.processedManifestPath")
-        log("resources: $info.processedResourcesPath")
-        log("assets: $info.processedAssetsPath")
+        log("build type name: $variationInfo.buildTypeName")
+        log("project flavor name: $variationInfo.projectFlavorName")
+        log("variation name: $variationInfo.variationName")
+        log("manifest: $variationInfo.processedManifestPath")
+        log("resources: $variationInfo.processedResourcesPath")
+        log("assets: $variationInfo.processedAssetsPath")
         log("test sources: $variationSources.java.asPath")
         log("test resources: $variationSources.resources.asPath")
         log("----------------------------------------")

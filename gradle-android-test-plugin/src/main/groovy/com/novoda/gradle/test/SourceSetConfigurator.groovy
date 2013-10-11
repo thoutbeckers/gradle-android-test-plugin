@@ -1,8 +1,5 @@
 package com.novoda.gradle.test
-
 import org.gradle.api.Project
-import org.gradle.api.Task
-import org.gradle.api.file.FileCollection
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.tasks.SourceSet
 
@@ -28,21 +25,20 @@ class SourceSetConfigurator {
         }
     }
 
-    public void setupCompileTestTask(String language, SourceSet variationSources, Task compileAndroid,
-                                     FileCollection testCompileClasspath, def testDestinationDir, VariationInfo info) {
+    public void configureCompileTestTask(String language, SourceSet variationSources, TestInfo testTasksInfo, VariationInfo variationInfo) {
 
-        SourceDirectorySet languageVariationSources = variationSources.getProperty(language)
-        languageVariationSources.setSrcDirs testSrcDir(info, language)
+        SourceDirectorySet languageVariationSource = variationSources.getProperty(language)
+        languageVariationSource.setSrcDirs testSrcDir(variationInfo, language)
 
         // Create a task which compiles the test sources.
         def testCompileTask = project.tasks.getByName variationSources.getCompileTaskName(language)
         // Depend on the project compilation (which itself depends on the manifest processing task).
-        testCompileTask.dependsOn compileAndroid
+        testCompileTask.dependsOn testTasksInfo.androidCompile
         testCompileTask.group = null
         testCompileTask.description = null
-        testCompileTask.classpath = testCompileClasspath
-        testCompileTask.source = languageVariationSources
-        testCompileTask.destinationDir = testDestinationDir.getSingleFile()
+        testCompileTask.classpath = testTasksInfo.testCompileClasspath
+        testCompileTask.source = languageVariationSource
+        testCompileTask.destinationDir = testTasksInfo.testDestinationDir
         testCompileTask.doFirst {
             testCompileTask.options.bootClasspath = androidRuntime
         }

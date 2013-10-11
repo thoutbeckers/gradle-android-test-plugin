@@ -15,7 +15,8 @@ class AndroidTestPluginExtension {
 
     Project testProject
 
-    def projectUnderTest(Project androidProject) {
+    @SuppressWarnings("GroovyUnusedDeclaration")
+    public void projectUnderTest(Project androidProject) {
 
         def hasAppPlugin = androidProject.plugins.hasPlugin "android"
         def hasLibraryPlugin = androidProject.plugins.hasPlugin "android-library"

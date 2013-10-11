@@ -6,6 +6,7 @@ class VariationInfo {
     List projectFlavorNames
     String projectFlavorName
     String variationName
+
     def processedManifestPath
     def processedResourcesPath
     def processedAssetsPath
