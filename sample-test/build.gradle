@@ -18,9 +18,9 @@ repositories {
     mavenCentral()
 }
 
-android {
-    projectUnderTest project(':sample')
-}
+//android {
+//    projectUnderTest ':sample'
+//}
 
 dependencies {
     testCompile "org.codehaus.groovy:groovy-all:1.8.6"
