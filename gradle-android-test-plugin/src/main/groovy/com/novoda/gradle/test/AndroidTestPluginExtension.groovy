@@ -13,13 +13,17 @@ class AndroidTestPluginExtension {
     static final String TEST_CLASSES_DIR = 'test-classes'
     static final String TEST_REPORT_DIR = 'test-report'
 
-    Project testProject
+    private final Project project
+
+    AndroidTestPluginExtension(project) {
+        this.project = project
+    }
 
     @SuppressWarnings("GroovyUnusedDeclaration")
-    public void projectUnderTest(Project androidProject) {
+    public void projectUnderTest(Project projectUnderTest) {
 
-        def hasAppPlugin = androidProject.plugins.hasPlugin "android"
-        def hasLibraryPlugin = androidProject.plugins.hasPlugin "android-library"
+        def hasAppPlugin = projectUnderTest.plugins.hasPlugin "android"
+        def hasLibraryPlugin = projectUnderTest.plugins.hasPlugin "android-library"
 
         if (!hasAppPlugin && !hasLibraryPlugin) {
             throw new IllegalStateException("The 'android' or 'android-library' plugin is required.")
@@ -28,23 +32,28 @@ class AndroidTestPluginExtension {
                     "Having both 'android' and 'android-library' plugin is not supported.")
         }
         // Get the 'test' configuration for test-only dependencies.
-        Configuration testConfiguration = testProject.configurations.getByName('testCompile')
+        Configuration testConfiguration = project.configurations.getByName('testCompile')
 
         // Replace the root 'test' task for running all unit tests.
-        Task testTask = testProject.tasks.replace(TEST_TASK_NAME, TestReport)
-        testTask.destinationDir = testProject.file("$testProject.buildDir/$TEST_REPORT_DIR")
+        Task testTask = project.tasks.replace(TEST_TASK_NAME, TestReport)
+        testTask.destinationDir = project.file("$project.buildDir/$TEST_REPORT_DIR")
         testTask.description = 'Runs all unit tests.'
         testTask.group = JavaBasePlugin.VERIFICATION_GROUP
         // Add our new task to Gradle's standard "check" task.
-        testProject.tasks.check.dependsOn testTask
+        project.tasks.check.dependsOn testTask
 
-        def androidPlugin = androidProject.plugins.getPlugin(hasAppPlugin ? "android" : "android-library");
-        def androidRuntime = androidPlugin.getRuntimeJarList().join(File.pathSeparator)
 
-        def variants = hasAppPlugin ? androidProject.android.applicationVariants :
-                androidProject.android.libraryVariants
+        def androidPlugin = projectUnderTest.plugins.getPlugin(hasAppPlugin ? "android" : "android-library");
 
-        VariationConfigurator variantConfigurator = new VariationConfigurator(testProject, androidRuntime, testConfiguration, testTask)
+        project.dependencies {
+            testCompile project.files(androidPlugin.runtimeJarList)
+            testCompile projectUnderTest
+        }
+
+        def variants = hasAppPlugin ? projectUnderTest.android.applicationVariants :
+                projectUnderTest.android.libraryVariants
+
+        VariationConfigurator variantConfigurator = new VariationConfigurator(project, testConfiguration, testTask)
         variants.all { variant ->
             variantConfigurator.configure(variant)
         }

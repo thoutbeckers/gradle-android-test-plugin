@@ -16,13 +16,11 @@ class VariationConfigurator {
     private static final String TEST_REPORT_DIR = AndroidTestPluginExtension.TEST_REPORT_DIR
 
     private final Project project
-    private final Object androidRuntime
     private final Configuration testConfiguration
     private final Task testTask
 
-    VariationConfigurator(Project project, androidRuntime, Configuration testConfiguration, Task testTask) {
+    VariationConfigurator(Project project, Configuration testConfiguration, Task testTask) {
         this.project = project
-        this.androidRuntime = androidRuntime
         this.testConfiguration = testConfiguration
         this.testTask = testTask
     }
@@ -36,7 +34,7 @@ class VariationConfigurator {
         variationSources.resources.srcDirs file("src/$TEST_DIR/resources")
 
         // Configure the compile task for every language supported
-        SourceSetConfigurator configurator = new SourceSetConfigurator(project, androidRuntime)
+        SourceSetConfigurator configurator = new SourceSetConfigurator(project)
         eachSupportedLanguage { String language ->
             configurator.configureCompileTestTask(language, variationSources, testInfo, variationInfo)
         }
@@ -64,7 +62,7 @@ class VariationConfigurator {
                 file("$project.buildDir/$TEST_REPORT_DIR/$variant.dirName")
         testRunTask.doFirst {
             // Prepend the Android runtime onto the classpath.
-            testRunTask.classpath = files(androidRuntime).plus testInfo.testRunClasspath
+            testRunTask.classpath = testInfo.testRunClasspath
         }
 
         // Work around http://issues.gradle.org/browse/GRADLE-1682

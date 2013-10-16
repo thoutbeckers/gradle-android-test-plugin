@@ -7,7 +7,6 @@ class AndroidTestPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        project.extensions.create("android", AndroidTestPluginExtension)
-        project.android.testProject = project
+        project.extensions.create("android", AndroidTestPluginExtension, project)
     }
 }

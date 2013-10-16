@@ -9,11 +9,9 @@ class SourceSetConfigurator {
     private static final String TEST_DIR = AndroidTestPluginExtension.TEST_DIR
 
     private final Project project
-    private final Object androidRuntime
 
-    SourceSetConfigurator(Project project, androidRuntime) {
+    SourceSetConfigurator(Project project) {
         this.project = project
-        this.androidRuntime = androidRuntime
     }
 
     public void configureCompileTestTask(String language, SourceSet variationSources, TestInfo testTasksInfo, VariationInfo variationInfo) {
@@ -30,9 +28,6 @@ class SourceSetConfigurator {
         testCompileTask.classpath = testTasksInfo.testCompileClasspath
         testCompileTask.source = languageVariationSource
         testCompileTask.destinationDir = testTasksInfo.testDestinationDir
-        testCompileTask.doFirst {
-            testCompileTask.options.bootClasspath = androidRuntime
-        }
     }
 
     private ArrayList testSrcDir(VariationInfo info, String language) {
