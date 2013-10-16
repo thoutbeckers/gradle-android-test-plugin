@@ -48,3 +48,7 @@ android {
 * Known issues: the IDE does not support running a single test in isolation. You have to run the whole suite
 * Known boons: plugins respect `testCompile` dependencies and runs JUnit tests, TenstNG, Robolectric and Spock
 * Working towards: `scala` and `jacoco` full support
+
+Creadits
+=============================
+The core of this plugin is derived from Jake Wharton's [gradle-android-test-plugin](https://github.com/JakeWharton/gradle-android-test-plugin)
