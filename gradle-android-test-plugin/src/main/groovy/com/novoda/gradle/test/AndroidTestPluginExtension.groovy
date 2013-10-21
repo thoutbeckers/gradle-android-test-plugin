@@ -51,12 +51,11 @@ class AndroidTestPluginExtension {
         def androidPlugin = projectUnderTest.plugins.getPlugin(hasAppPlugin(projectUnderTest) ? "android" : "android-library")
 
         def androidRuntime = project.files(androidPlugin.runtimeJarList)
-        def projectUnderTestDependencies = project.files(projectUnderTest)
 
         // Add additional dependencies such as the project under test and the android runtime
         project.dependencies {
             testCompile androidRuntime
-            testCompile projectUnderTestDependencies
+            testCompile projectUnderTest
         }
 
         // Get the 'test' configuration for test-only dependencies.

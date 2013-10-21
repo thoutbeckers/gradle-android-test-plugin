@@ -16,7 +16,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:0.5.+'
-        classpath 'com.novoda:gradle-android-test-plugin:0.9.1-SNAPSHOT'
+        classpath 'com.novoda:gradle-android-test-plugin:0.9.3-SNAPSHOT'
     }
 }
 apply plugin: 'java'
@@ -28,7 +28,6 @@ apply plugin: 'android-test'
 
 ```
 dependencies {
-    testCompile project(':novoda-app')
     testCompile 'junit:junit:4.11'
     testCompile 'org.mockito:mockito-core:1.9.5'
     testCompile 'com.squareup:fest-android:1.0.+'
@@ -40,7 +39,7 @@ dependencies {
 
 ```
 android {
-    projectUnderTest project(':novoda-app')
+    projectUnderTest ':novoda-app'
 }
 ```
 
