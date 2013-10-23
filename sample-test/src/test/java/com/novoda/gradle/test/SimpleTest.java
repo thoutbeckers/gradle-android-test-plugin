@@ -8,7 +8,7 @@ public class SimpleTest {
 
     @Test
     public void doesNotExplode() throws Exception {
-        SimpleTest simpleTest = new SimpleTest();
-        assertNotNull(simpleTest);
+        Simple simple = new Simple();
+        assertNotNull(simple);
     }
 }

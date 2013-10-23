@@ -46,29 +46,19 @@ class AndroidTestPluginExtension {
             variantConfigurator.configure(variant)
         }
 
-        def skipCompileTestTask = []
-        eachSupportedLanguage {
-            skipCompileTestTask << "compileTest${it.capitalize()}"
-        }
-
-        println skipCompileTestTask
-
-        // Since we are using our own flavored compileTest task, we don't need the standard one
-        project.gradle.taskGraph.beforeTask { task ->
-            if (skipCompileTestTask.contains(task.name)) {
-                task.deleteAllActions()
-                println "Task $task.name is being rendered useless"
-            }
-        }
+        // We don't need these tasks because
+        skipCompileTestTasks()
     }
 
-    private void eachSupportedLanguage(Closure closure) {
-        closure('java')
-        if (project.plugins.hasPlugin('groovy')) {
-            closure('groovy')
+    private void skipCompileTestTasks() {
+        def skipCompileTestTask = new SupportedLanguages(project).collect {
+            "compileTest${it.capitalize()}"
         }
-        if (project.plugins.hasPlugin('scala')) {
-            closure('scala')
+
+        for (String name : skipCompileTestTask) {
+            Task task = project.tasks.getByName(name)
+            task.deleteAllActions()
+            println "Task $task.name is being rendered useless"
         }
     }
 

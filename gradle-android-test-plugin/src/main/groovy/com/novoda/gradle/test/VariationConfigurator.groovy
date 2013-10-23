@@ -35,7 +35,7 @@ class VariationConfigurator {
 
         // Configure the compile task for every language supported
         SourceSetConfigurator configurator = new SourceSetConfigurator(project)
-        eachSupportedLanguage { String language ->
+        new SupportedLanguages(project).each { String language ->
             configurator.configureCompileTestTask(language, variationSources, testInfo, variationInfo)
         }
 
@@ -86,16 +86,6 @@ class VariationConfigurator {
         log("test sources: $variationSources.java.asPath")
         log("test resources: $variationSources.resources.asPath")
         log("----------------------------------------")
-    }
-
-    private void eachSupportedLanguage(Closure closure) {
-        closure('java')
-        if (project.plugins.hasPlugin('groovy')) {
-            closure('groovy')
-        }
-        if (project.plugins.hasPlugin('scala')) {
-            closure('scala')
-        }
     }
 
     private File file(Object path) {
