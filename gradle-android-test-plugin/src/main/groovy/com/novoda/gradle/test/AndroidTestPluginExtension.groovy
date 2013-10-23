@@ -46,7 +46,7 @@ class AndroidTestPluginExtension {
             variantConfigurator.configure(variant)
         }
 
-        // We don't need these tasks because
+        // We don't need these tasks because we will use their 'variant'
         skipCompileTestTasks()
     }
 
