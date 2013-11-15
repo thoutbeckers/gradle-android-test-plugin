@@ -48,6 +48,6 @@ android {
 * Known boons: plugins respect `testCompile` dependencies and runs JUnit tests, TenstNG, Robolectric and Spock
 * Working towards: `scala` and `jacoco` full support
 
-Creadits
+Credits
 =============================
 The core of this plugin is derived from Jake Wharton's [gradle-android-test-plugin](https://github.com/JakeWharton/gradle-android-test-plugin)
