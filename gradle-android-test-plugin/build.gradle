@@ -1,6 +1,9 @@
 apply plugin: 'groovy'
 apply from: file("deploy.gradle")
 
+group = "com.novoda"
+version = "0.9.9-SNAPSHOT"
+
 repositories {
     mavenCentral()
 }

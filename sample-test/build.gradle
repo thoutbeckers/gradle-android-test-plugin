@@ -1,12 +1,13 @@
 buildscript {
     repositories {
         mavenCentral()
+        mavenLocal()
         maven {
             url "https://oss.sonatype.org/content/repositories/snapshots/"
         }
     }
     dependencies {
-        classpath 'com.novoda:gradle-android-test-plugin:0.9.7-SNAPSHOT'
+        classpath project(':gradle-android-test-plugin')
     }
 }
 
