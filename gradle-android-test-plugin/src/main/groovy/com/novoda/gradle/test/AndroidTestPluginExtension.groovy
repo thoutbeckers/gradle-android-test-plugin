@@ -1,4 +1,5 @@
 package com.novoda.gradle.test
+
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
@@ -63,7 +64,7 @@ class AndroidTestPluginExtension {
     }
 
     private Configuration makeTestConfiguration(Project projectUnderTest) {
-        def androidPlugin = projectUnderTest.plugins.getPlugin(hasAppPlugin(projectUnderTest) ? "android" : "android-library")
+        def androidPlugin = projectUnderTest.plugins.getPlugin(hasAppPlugin(projectUnderTest) ? "com.android.application" : "com.android.library")
 
         def androidRuntime = project.files(androidPlugin.bootClasspath)
 
@@ -78,11 +79,11 @@ class AndroidTestPluginExtension {
     }
 
     private boolean hasLibraryPlugin(Project projectUnderTest) {
-        projectUnderTest.plugins.hasPlugin "android-library"
+        projectUnderTest.plugins.hasPlugin "com.android.library"
     }
 
     private boolean hasAppPlugin(Project projectUnderTest) {
-        projectUnderTest.plugins.hasPlugin "android"
+        projectUnderTest.plugins.hasPlugin "com.android.application"
     }
 
     private TestReport makeTestTask() {
