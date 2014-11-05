@@ -1,5 +1,3 @@
-import java.sql.Wrapper
-
 buildscript {
     repositories {
         mavenCentral()
@@ -8,10 +6,10 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.10.+'
+        classpath 'com.android.tools.build:gradle:0.13.3'
     }
 }
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 
 repositories {
     mavenCentral()
@@ -19,11 +17,11 @@ repositories {
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.0.3"
+    buildToolsVersion "19.1.0"
 
     defaultConfig {
         minSdkVersion 7
-        targetSdkVersion 16
+        targetSdkVersion 19
     }
 
     buildTypes {
@@ -34,26 +32,26 @@ android {
 
     productFlavors {
 
-        flavorGroups "pricing", "releaseType"
+        flavorDimensions "pricing", "releaseType"
 
         beta {
-            flavorGroup "releaseType"
+            flavorDimension "releaseType"
         }
 
         normal {
-            flavorGroup "releaseType"
+            flavorDimension "releaseType"
         }
 
         free {
-            flavorGroup "pricing"
+            flavorDimension "pricing"
         }
 
         paid {
-            flavorGroup "pricing"
+            flavorDimension "pricing"
         }
     }
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:18.0.0'
+    compile 'com.android.support:appcompat-v7:19.1.0'
 }
