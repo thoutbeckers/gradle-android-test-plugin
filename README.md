@@ -43,6 +43,13 @@ android {
 }
 ```
 
+__Usage__
+
+* Run `./gradlew test` to run all tests
+* Run `./gradlew testFlavorName` to run tests for a single flavor
+* Run `./gradlew test -Pmatching=**/*TestClassName*` to run specific test class
+* Run `./gradlew test -Pmatching=**/special/**/*` to run some special tests
+
 * Congratulation, you can now run unit tests against your android source!
 * Known issues: the IDE does not support running a single test in isolation. You have to run the whole suite
 * Known boons: plugins respect `testCompile` dependencies and runs JUnit tests, TenstNG, Robolectric and Spock
