@@ -65,8 +65,15 @@ class VariationConfigurator {
 
         // Work around http://issues.gradle.org/browse/GRADLE-1682
         testRunTask.scanForTestClasses = false
-        testRunTask.include '**/*Test.class'
-        testRunTask.include '**/*Spec.class'
+
+
+        if (project.hasProperty("matching")) {
+          testRunTask.include project.matching
+        } else {
+          testRunTask.include '**/*Test.class'
+          testRunTask.include '**/*Spec.class'
+        }
+
         // Add the path to the correct manifest, resources, assets as a system property.
         testRunTask.systemProperties.put('android.manifest', variationInfo.processedManifestPath)
         testRunTask.systemProperties.put('android.resources', variationInfo.processedResourcesPath)
