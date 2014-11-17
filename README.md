@@ -1,60 +1,70 @@
-gradle-android-test-plugin
-=============================
+# gradle-android-test-plugin [![](https://raw.githubusercontent.com/novoda/novoda/master/assets/btn_apache_lisence.png)](LICENSE.txt)
+
+Runs your Robolectric Android unit tests.
+
+
+## Description
 
 To run unit tests for your android code:
 
-* Create a new java module outside the android module that you want to test
-* Apply the android-test plugin to the test module
+  * Create a new java module outside the android module that you want to test
+  * Apply the android-test plugin to the test module
+  * Add your tests under scr/test/java
+  * Don't forget to add a dependency from your test module to the android module e.g.
 
-```
-buildscript {
-    repositories {
-        mavenCentral()
-        maven {
-            url "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.5.+'
-        classpath 'com.novoda:gradle-android-test-plugin:0.9.3-SNAPSHOT'
-    }
-}
+  ```groovy
+  dependencies {
+      testCompile 'junit:junit:4.11'
+      testCompile 'org.mockito:mockito-core:1.9.5'
+      testCompile 'com.squareup:fest-android:1.0.+'
+      testCompile 'org.robolectric:robolectric:2.1.+'
+  }
+  ```
+
+  * Last but not least, tell the plugin which is the android module that you want to test
+
+  ```groovy
+  android {
+      projectUnderTest ':novoda-app'
+  }
+  ```
+
+
+## Adding to your project
+
+To start using this library, add these lines to the `build.gradle` of your project:
+
+```groovy
 apply plugin: 'java'
 apply plugin: 'android-test'
-```
 
-* Add your tests under scr/test/java
-* Don't forget to add a dependency from your test module to the android module e.g.
+buildscript {
+    repositories {
+        jcenter()
+    }
 
-```
-dependencies {
-    testCompile 'junit:junit:4.11'
-    testCompile 'org.mockito:mockito-core:1.9.5'
-    testCompile 'com.squareup:fest-android:1.0.+'
-    testCompile 'org.robolectric:robolectric:2.1.+'
+    dependencies {
+        classpath 'com.novoda:gradle-android-test-plugin:0.9.3'
+    }
 }
 ```
 
-* Last but not least, tell the plugin which is the android module that you want to test
 
-```
-android {
-    projectUnderTest ':novoda-app'
-}
-```
+## Simple usage
 
-__Usage__
+These are the commands you can use once it's all set up:
 
-* Run `./gradlew test` to run all tests
-* Run `./gradlew testFlavorName` to run tests for a single flavor
-* Run `./gradlew test -Pmatching=**/*TestClassName*` to run specific test class
-* Run `./gradlew test -Pmatching=**/special/**/*` to run some special tests
+  * Run `./gradlew test` to run all tests
+  * Run `./gradlew test{FlavorName}` to run tests for a single flavor
+  * Run `./gradlew test -Pmatching=**/*TestClassName*` to run specific a test class
+  * Run `./gradlew test -Pmatching=**/special/**/*` to run some tests under a package
 
-* Congratulation, you can now run unit tests against your android source!
-* Known issues: the IDE does not support running a single test in isolation. You have to run the whole suite
-* Known boons: plugins respect `testCompile` dependencies and runs JUnit tests, TenstNG, Robolectric and Spock
-* Working towards: `scala` and `jacoco` full support
 
-Credits
-=============================
-The core of this plugin is derived from Jake Wharton's [gradle-android-test-plugin](https://github.com/JakeWharton/gradle-android-test-plugin)
+## Links
+
+Here are a list of useful links:
+
+ * We always welcome people to contribute new features or bug fixes, [here is how](https://github.com/novoda/novoda/blob/master/CONTRIBUTING.md)
+ * If you have a problem check the [Issues Page](https://github.com/novoda/gradle-android-test-plugin/issues) first to see if we are working on it
+ * For further usage or to delve more deeply checkout the [Project Wiki](https://github.com/novoda/gradle-android-test-plugin/wiki)
+ * Looking for community help, browse the already asked [Stack Overflow Questions](http://stackoverflow.com/questions/tagged/support-gradle-android-test) or use the tag: `support-gradle-android-test` when posting a new question
