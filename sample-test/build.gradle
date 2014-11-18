@@ -1,11 +1,6 @@
 buildscript {
     repositories {
-        mavenCentral()
-        mavenLocal()
-    }
-
-    dependencies {
-        classpath project(':gradle-android-test-plugin')
+        jcenter()
     }
 }
 
