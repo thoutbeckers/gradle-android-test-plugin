@@ -44,7 +44,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.novoda:gradle-android-test-plugin:0.9.3'
+        classpath 'com.novoda:gradle-android-test-plugin:0.9.9'
     }
 }
 ```
