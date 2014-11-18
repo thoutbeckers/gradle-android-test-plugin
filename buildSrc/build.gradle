@@ -1,0 +1,8 @@
+repositories {
+    jcenter()
+}
+
+rootProject.dependencies {
+    compile 'com.android.tools.build:gradle:0.14.1'
+    compile project(':gradle-android-test-plugin')
+}
