@@ -1,4 +1,4 @@
-# gradle-android-test-plugin [![](https://raw.githubusercontent.com/novoda/novoda/master/assets/btn_apache_lisence.png)](LICENSE.txt)
+# gradle-android-test-plugin [![](http://ci.novoda.com/buildStatus/icon?job=gradle-android-test-plugin)](http://ci.novoda.com/job/gradle-android-test-plugin/lastSuccessfulBuild/console) [![](https://raw.githubusercontent.com/novoda/novoda/master/assets/btn_apache_lisence.png)](LICENSE.txt)
 
 Runs your Robolectric Android unit tests.
 
