@@ -27,6 +27,6 @@ publish {
     groupId = 'com.novoda'
     artifactId = 'gradle-android-test-plugin'
     version = project.version
-    description = 'Unleash the full power  of unit test for your Android build'
+    description = 'Unleash the full power of unit test for your Android build'
     website = 'https://github.com/novoda/gradle-android-test-plugin'
 }
