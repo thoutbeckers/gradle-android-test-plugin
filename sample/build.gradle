@@ -51,7 +51,3 @@ android {
         }
     }
 }
-
-dependencies {
-    compile 'com.android.support:appcompat-v7:19.1.0'
-}
