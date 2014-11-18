@@ -1,0 +1,2 @@
+include ':gradle-android-test-plugin'
+project(':gradle-android-test-plugin').projectDir = new File('../gradle-android-test-plugin')
