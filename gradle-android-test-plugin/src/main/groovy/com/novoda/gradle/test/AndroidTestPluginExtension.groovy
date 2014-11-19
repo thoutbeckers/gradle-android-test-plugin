@@ -20,10 +20,10 @@ class AndroidTestPluginExtension {
     }
 
     @SuppressWarnings("GroovyUnusedDeclaration")
-    public void projectUnderTest(String projectName) {
+    public void projectUnderTest(String projectUnderTestName) {
+        project.evaluationDependsOn(projectUnderTestName)
 
-        Project projectUnderTest = project.project(projectName)
-
+        Project projectUnderTest = project.project(projectUnderTestName)
         def hasAppPlugin = hasAppPlugin(projectUnderTest)
         def hasLibraryPlugin = hasLibraryPlugin(projectUnderTest)
 
