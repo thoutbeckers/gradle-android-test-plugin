@@ -20,7 +20,7 @@ class VariationInfo {
         // looking up existing associated tasks as well as naming the task we are about to create.
         variationName = "$projectFlavorName$buildTypeName"
         // Grab the task which outputs the merged manifest, resources, and assets for this flavor.
-        processedManifestPath = variant.processManifest.manifestOutputFile
+        processedManifestPath = variant.outputs[0].processManifest.manifestOutputFile
         processedResourcesPath = variant.mergeResources.outputDir
         processedAssetsPath = variant.mergeAssets.outputDir
     }
