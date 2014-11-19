@@ -11,7 +11,7 @@ apply plugin: 'groovy'
 apply plugin: 'bintray-release'
 
 group = "com.novoda"
-version = "0.10.0"
+version = "0.10.1"
 
 repositories {
     jcenter()
