@@ -8,6 +8,9 @@ import org.gradle.api.tasks.testing.TestReport
 
 class AndroidTestPluginExtension {
 
+    static final String ANDROID_APPLICATION_PLUGIN = "com.android.application"
+    static final String ANDROID_LIBRARY_PLUGIN = "com.android.library"
+
     static final String TEST_DIR = 'test'
     static final String TEST_TASK_NAME = 'test'
     static final String TEST_CLASSES_DIR = 'test-classes'
@@ -28,10 +31,9 @@ class AndroidTestPluginExtension {
         def hasLibraryPlugin = hasLibraryPlugin(projectUnderTest)
 
         if (!hasAppPlugin && !hasLibraryPlugin) {
-            throw new IllegalStateException("The 'android' or 'android-library' plugin is required.")
+            throw new IllegalStateException("The '${ANDROID_APPLICATION_PLUGIN}' or '${ANDROID_LIBRARY_PLUGIN}' plugin is required.")
         } else if (hasAppPlugin && hasLibraryPlugin) {
-            throw new IllegalStateException(
-                    "Having both 'android' and 'android-library' plugin is not supported.")
+            throw new IllegalStateException("Having both '${ANDROID_APPLICATION_PLUGIN}' and '${ANDROID_LIBRARY_PLUGIN}' plugin is not supported.")
         }
 
         Configuration testConfiguration = makeTestConfiguration(projectUnderTest)
@@ -64,7 +66,7 @@ class AndroidTestPluginExtension {
     }
 
     private Configuration makeTestConfiguration(Project projectUnderTest) {
-        def androidPlugin = projectUnderTest.plugins.getPlugin(hasAppPlugin(projectUnderTest) ? "com.android.application" : "com.android.library")
+        def androidPlugin = projectUnderTest.plugins.getPlugin(hasAppPlugin(projectUnderTest) ? ANDROID_APPLICATION_PLUGIN : ANDROID_LIBRARY_PLUGIN)
 
         def androidRuntime = project.files(androidPlugin.bootClasspath)
 
@@ -79,11 +81,11 @@ class AndroidTestPluginExtension {
     }
 
     private boolean hasLibraryPlugin(Project projectUnderTest) {
-        projectUnderTest.plugins.hasPlugin "com.android.library"
+        projectUnderTest.plugins.hasPlugin ANDROID_LIBRARY_PLUGIN
     }
 
     private boolean hasAppPlugin(Project projectUnderTest) {
-        projectUnderTest.plugins.hasPlugin "com.android.application"
+        projectUnderTest.plugins.hasPlugin ANDROID_APPLICATION_PLUGIN
     }
 
     private TestReport makeTestTask() {
