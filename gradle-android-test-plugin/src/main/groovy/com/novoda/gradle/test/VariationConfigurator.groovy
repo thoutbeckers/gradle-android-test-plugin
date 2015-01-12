@@ -74,6 +74,18 @@ class VariationConfigurator {
           testRunTask.include '**/*Spec.class'
         }
 
+        if (project.hasProperty("maxParallelForks")) {
+            testRunTask.setMaxParallelForks(project.maxParallelForks.toInteger())
+        }
+
+        if (project.hasProperty("maxHeapSize")) {
+            testRunTask.setMaxHeapSize(project.maxHeapSize)
+        }
+
+        if (project.hasProperty("forkEvery")) {
+            testRunTask.setForkEvery(project.maxParallelForks.toInteger())
+        }
+
         // Add the path to the correct manifest, resources, assets as a system property.
         testRunTask.systemProperties.put('android.manifest', variationInfo.processedManifestPath)
         testRunTask.systemProperties.put('android.resources', variationInfo.processedResourcesPath)
