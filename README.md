@@ -60,6 +60,21 @@ These are the commands you can use once it's all set up:
   * Run `./gradlew test -Pmatching=**/special/**/*` to run some tests under a package
 
 
+## Run on parallel forks
+
+There are the number optional properties which lets you to run tests on multiple parallel forks. You can put all or some in `gradle.properties` file:
+
+```
+maxParallelForks=4
+maxHeapSize=4096m
+forkEvery=150
+```
+
+Or you can set up through command line:
+
+  * `./gradlew test -PmaxParallelForks=4 -PmaxHeapSize=4096m -PforkEvery=150`
+
+
 ## Links
 
 Here are a list of useful links:
