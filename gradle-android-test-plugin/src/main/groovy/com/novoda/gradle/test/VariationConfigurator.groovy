@@ -85,6 +85,9 @@ class VariationConfigurator {
         if (project.hasProperty("forkEvery")) {
             testRunTask.setForkEvery(project.maxParallelForks.toInteger())
         }
+        if (project.hasProperty("testDebug")) {
+            testRunTask.debug(project.testDebug.toBoolean())
+        }
 
         // Add the path to the correct manifest, resources, assets as a system property.
         testRunTask.systemProperties.put('android.manifest', variationInfo.processedManifestPath)
