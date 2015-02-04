@@ -44,7 +44,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.novoda:gradle-android-test-plugin:0.10.1'
+        classpath 'com.novoda:gradle-android-test-plugin:0.10.2'
     }
 }
 ```
@@ -58,7 +58,7 @@ These are the commands you can use once it's all set up:
   * Run `./gradlew test{FlavorName}` to run tests for a single flavor
   * Run `./gradlew test -Pmatching=**/*TestClassName*` to run specific a test class
   * Run `./gradlew test -Pmatching=**/special/**/*` to run some tests under a package
-  * You can also pass additional JVM params: `./gradlew test -PmaxParallelForks=4 -PmaxHeapSize=4096m -PforkEvery=150`
+  * You can also pass additional JVM params: `./gradlew test -PmaxParallelForks=4 -PmaxHeapSize=4096m -PforkEvery=150 -PtestDebug=true`
 
 
 ## Links
