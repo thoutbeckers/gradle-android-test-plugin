@@ -18,6 +18,8 @@ class AndroidTestPluginExtension {
 
     private final Project project
 
+    public variants
+
     AndroidTestPluginExtension(project) {
         this.project = project
     }
@@ -40,7 +42,7 @@ class AndroidTestPluginExtension {
 
         TestReport testTask = makeTestTask()
 
-        def variants = hasAppPlugin ? projectUnderTest.android.applicationVariants :
+        variants = hasAppPlugin ? projectUnderTest.android.applicationVariants :
                 projectUnderTest.android.libraryVariants
 
         // Configure every build variant
