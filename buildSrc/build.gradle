@@ -3,6 +3,6 @@ repositories {
 }
 
 rootProject.dependencies {
-    compile 'com.android.tools.build:gradle:0.14.1'
+    compile 'com.android.tools.build:gradle:1.1.0'
     compile project(':gradle-android-test-plugin')
 }
