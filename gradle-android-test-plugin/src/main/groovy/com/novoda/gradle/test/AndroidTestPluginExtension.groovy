@@ -68,10 +68,7 @@ class AndroidTestPluginExtension {
     }
 
     private Configuration makeTestConfiguration(Project projectUnderTest) {
-        def androidPlugin = projectUnderTest.plugins.getPlugin(hasAppPlugin(projectUnderTest) ? ANDROID_APPLICATION_PLUGIN : ANDROID_LIBRARY_PLUGIN)
-
-        def androidRuntime = project.files(androidPlugin.androidBuilder.bootClasspath)
-
+        def androidRuntime = projectUnderTest.files(projectUnderTest.android.getBootClasspath())
         // Add additional dependencies such as the project under test and the android runtime
         project.dependencies {
             testCompile androidRuntime
@@ -101,4 +98,3 @@ class AndroidTestPluginExtension {
         testTask
     }
 }
-
